@@ -1,0 +1,5 @@
+/venv/
+*/venv/
+*.pt
+/venv_1
+*/venv_1/
