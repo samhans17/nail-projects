@@ -13,8 +13,8 @@ import numpy as np
 from typing import Tuple, Optional
 import random
 
-from nail_geometry import NailGeometry
-from nail_material import NailMaterial
+from .nail_geometry import NailGeometry
+from .nail_material import NailMaterial
 
 
 class PhotoRealisticNailRenderer:

@@ -16,7 +16,10 @@ from utils import read_image_from_bytes
 from cache import segmentation_cache
 
 # Add professional renderer to path
-sys.path.insert(0, str(Path(__file__).parent.parent / 'professional_nail_renderer'))
+# Get the project root directory (parent of backend/) and add it to sys.path
+# This allows importing professional_nail_renderer as a package
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
 
 from professional_nail_renderer import (
     NailGeometryAnalyzer,
