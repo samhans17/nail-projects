@@ -63,5 +63,9 @@ cd /app\n\
 exec python3 runpod_server.py\n\
 ' > /app/start.sh && chmod +x /app/start.sh
 
+# Copy docker entrypoint
+COPY docker-entrypoint.sh /app/docker-entrypoint.sh
+RUN chmod +x /app/docker-entrypoint.sh
+
 # Set the entrypoint
-CMD ["/app/start.sh"]
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
