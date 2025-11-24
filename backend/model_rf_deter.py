@@ -9,7 +9,7 @@ import numpy as np
 import torch
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model = RFDETRSegPreview(
-    pretrain_weights="/home/usama-naveed/nail_AR-rfdeter/output/checkpoint_best_total.pth",
+    pretrain_weights="checkpoint_best_total.pth",
     device=device
 )
 model.optimize_for_inference()
