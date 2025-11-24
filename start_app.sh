@@ -23,14 +23,13 @@ echo "🔧 Starting backend on port 8000..."
 
 # Start backend with production optimizations
 # Removed --reload for better performance (no file watching overhead)
-# Added --workers 1 for single-worker mode (better for GPU models)
+# Removed --workers flag to avoid multiple model loads (GPU models are heavy)
 # Added --timeout-keep-alive 75 for longer connections
 # Removed access logs for better performance
 cd backend
 python3 -m uvicorn main:app \
     --host 0.0.0.0 \
     --port 8000 \
-    --workers 1 \
     --timeout-keep-alive 75 \
     --no-access-log &
 BACKEND_PID=$!

@@ -1,0 +1,27 @@
+[Unit]
+Description=Nail AR Application
+After=network.target
+
+[Service]
+Type=forking
+User=usama-naveed
+WorkingDirectory=/home/usama-naveed/nail-project
+Environment="PATH=/home/usama-naveed/nail-project/venv_1/bin:/usr/local/bin:/usr/bin:/bin"
+
+# Start command
+ExecStart=/home/usama-naveed/nail-project/start_app.sh
+
+# Stop command
+ExecStop=/bin/bash -c 'pkill -f "uvicorn main:app"; pkill -f "http.server 3000"'
+
+# Restart policy
+Restart=on-failure
+RestartSec=10s
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=nail-ar
+
+[Install]
+WantedBy=multi-user.target
