@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🚀 Starting Nail AR Application..."
+echo "🚀 Starting Nail AR Application (Development Mode)..."
 echo ""
 
 # Activate venv
@@ -8,8 +8,8 @@ echo ""
 if [ -n "$VENV_PATH" ] && [ -f "$VENV_PATH/bin/activate" ]; then
     source "$VENV_PATH/bin/activate"
     echo "✅ Venv activated: $VENV_PATH"
-elif [ -f "venv/bin/activate" ]; then
-    source venv/bin/activate
+elif [ -f "venv_1/bin/activate" ]; then
+    source venv_1/bin/activate
     echo "✅ Venv activated: ./venv"
 elif [ -f "/workspace/nail-projects/venv/bin/activate" ]; then
     source /workspace/nail-projects/venv/bin/activate
@@ -19,20 +19,11 @@ else
 fi
 
 echo ""
-echo "🔧 Starting backend on port 8000..."
+echo "🔧 Starting backend on port 8000 (with auto-reload)..."
 
-# Start backend with production optimizations
-# Removed --reload for better performance (no file watching overhead)
-# Added --workers 1 for single-worker mode (better for GPU models)
-# Added --timeout-keep-alive 75 for longer connections
-# Removed access logs for better performance
+# Start backend in development mode with reload
 cd backend
-python3 -m uvicorn main:app \
-    --host 0.0.0.0 \
-    --port 8000 \
-    --workers 1 \
-    --timeout-keep-alive 75 \
-    --no-access-log &
+python3 -m uvicorn main:app --host 0.0.0.0 --port 8000 --reload &
 BACKEND_PID=$!
 cd ..
 
@@ -87,13 +78,14 @@ fi
 
 echo ""
 echo "=================================="
-echo "✅ Application is running!"
+echo "✅ Application is running (DEV MODE)!"
 echo "=================================="
 echo ""
 echo "Frontend: http://localhost:3000/app-realtime.html"
 echo "Backend:  http://localhost:8000/docs"
 echo ""
 echo "CORS is enabled for all origins"
+echo "Auto-reload is ENABLED"
 echo ""
 echo "Press Ctrl+C to stop all servers"
 echo ""

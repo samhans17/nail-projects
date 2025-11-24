@@ -4,16 +4,45 @@ from rfdetr.util.coco_classes import COCO_CLASSES
 import supervision as sv
 from PIL import Image
 import numpy as np
-
-# Load the RF-DETR model
 import torch
+import os
+
+# Model singleton to avoid reloading
+_model_instance = None
+_device = None
+
+
+def get_model():
+    """
+    Get or initialize the RF-DETR model (singleton pattern).
+    This lazy loads the model only when first needed.
+    """
+    global _model_instance, _device
+
+    if _model_instance is None:
+        print("Loading RF-DETR model...")
+        _device = "cuda" if torch.cuda.is_available() else "cpu"
+
+        # Set environment variables for faster loading
+        os.environ['TORCH_CUDNN_V8_API_ENABLED'] = '1'
+
+        # Load model with optimizations
+        _model_instance = RFDETRSegPreview(
+            pretrain_weights="checkpoint_best_total.pth",
+            device=_device
+        )
+
+        # Optimize for inference
+        _model_instance.optimize_for_inference()
+
+        print(f"RF-DETR model loaded on {_device.upper()} and optimized for inference.")
+
+    return _model_instance
+
+
+# Keep backward compatibility
 device = "cuda" if torch.cuda.is_available() else "cpu"
-model = RFDETRSegPreview(
-    pretrain_weights="checkpoint_best_total.pth",
-    device=device
-)
-model.optimize_for_inference()
-print(f"RF-DETR model loaded on {device.upper()} and optimized for inference.")
+model = None  # Will be lazy-loaded via get_model()
 
 def run_inference(image: Image.Image) -> Dict[str, Any]:
     """
@@ -27,8 +56,13 @@ def run_inference(image: Image.Image) -> Dict[str, Any]:
     """
     width, height = image.size
 
+    # Get model instance (lazy load if needed)
+    model_instance = get_model()
+
     # Run detection with threshold (0.3 is more lenient, faster processing)
-    detections = model.predict(image, threshold=0.3)
+    # Use torch.no_grad() for faster inference
+    with torch.no_grad():
+        detections = model_instance.predict(image, threshold=0.3)
 
     nails: List[Dict[str, Any]] = []
 
