@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Professional API</title>
+</head>
+<body>
+  <h1>Test Professional Rendering API</h1>
+
+  <input type="file" id="fileInput" accept="image/*">
+  <br><br>
+
+  <select id="material">
+    <option value="glossy_red">Glossy Red</option>
+    <option value="metallic_gold">Metallic Gold</option>
+    <option value="matte_black">Matte Black</option>
+  </select>
+  <br><br>
+
+  <button onclick="testAPI()">Test Professional API</button>
+  <br><br>
+
+  <div id="status"></div>
+  <br>
+  <img id="result" style="max-width: 800px; border: 2px solid #333;">
+
+  <script>
+    const API_URL = "http://localhost:8000/api/nails/render-professional";
+
+    async function testAPI() {
+      const fileInput = document.getElementById('fileInput');
+      const material = document.getElementById('material').value;
+      const status = document.getElementById('status');
+      const resultImg = document.getElementById('result');
+
+      if (!fileInput.files || !fileInput.files[0]) {
+        status.textContent = "Please select an image first!";
+        return;
+      }
+
+      status.textContent = "Sending to API...";
+      console.log("📸 File:", fileInput.files[0]);
+      console.log("🎨 Material:", material);
+
+      const formData = new FormData();
+      formData.append("file", fileInput.files[0]);
+      formData.append("material", material);
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          body: formData
+        });
+
+        console.log("📡 Response status:", response.status);
+        console.log("📡 Headers:", [...response.headers.entries()]);
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`API error ${response.status}: ${errorText}`);
+        }
+
+        const blob = await response.blob();
+        console.log("✅ Got blob:", blob.size, "bytes");
+
+        const nailCount = response.headers.get('x-nail-count');
+        const materialUsed = response.headers.get('x-material');
+
+        status.textContent = `✅ Success! ${nailCount} nails detected, material: ${materialUsed}`;
+
+        const imgUrl = URL.createObjectURL(blob);
+        resultImg.src = imgUrl;
+
+      } catch (err) {
+        console.error("❌ Error:", err);
+        status.textContent = `❌ Error: ${err.message}`;
+      }
+    }
+  </script>
+</body>
+</html>
