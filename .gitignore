@@ -1,7 +1,163 @@
-/venv/
-*/venv/
-*.pt
-/venv_1
-*/venv_1/
+# Python Virtual Environments
+venv/
+venv_1/
+env/
+ENV/
+.venv/
+*.virtualenv
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Distribution / Packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyTorch Model Files
 *.pt
 *.pth
+*.ckpt
+checkpoint_*.pth
+*.safetensors
+
+# TensorFlow
+*.pb
+saved_model/
+*.h5
+*.tflite
+
+# ONNX
+*.onnx
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+logs/
+*.out
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+
+# Environment Variables
+.env
+.env.local
+.env.*.local
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Temporary Files
+tmp/
+temp/
+*.tmp
+*.bak
+*.cache
+
+# System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Node modules (if using any JS tools)
+node_modules/
+
+# Backend specific
+backend/__pycache__/
+backend/*.pyc
+backend/.pytest_cache/
+
+# Frontend uploads/temp
+frontend/uploads/
+frontend/temp/
+
+# Model checkpoints and weights (except the main one if needed)
+checkpoints/
+weights/
+*.weights
+
+# Data directories
+data/
+datasets/
+*.csv
+*.json.gz
+
+# Generated documentation
+docs/_build/
+site/
+
+# Profiling
+*.prof
+*.lprof
+
+# MacOS
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+.directory
+.Trash-*
+
+# Test images/videos (optional - comment out if you want to track them)
+# *.jpg
+# *.jpeg
+# *.png
+# *.mp4
+# *.avi
+
+# Compiled Python files
+*.pyc
+*.pyo
+
+# Package manager
+pip-log.txt
+pip-delete-this-directory.txt
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre
+.pyre/
+
+# Systemd service (installed separately)
+# nail-ar.service  # Uncomment if you don't want to track this
