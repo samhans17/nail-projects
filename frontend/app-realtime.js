@@ -1,7 +1,32 @@
 // app-realtime.js — Real-time nail AR with performance monitoring
 
-const API_URL = "http://localhost:8000/api/nails/segment";
-const API_URL_PROFESSIONAL = "http://localhost:8000/api/nails/render-professional";
+// API Configuration - Auto-detect environment
+function getApiBaseUrl() {
+    const hostname = window.location.hostname;
+
+    // If on localhost, use localhost:8000
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return 'http://localhost:8000';
+    }
+
+    // If on RunPod (proxy.runpod.net), replace port in URL
+    if (hostname.includes('proxy.runpod.net')) {
+        // Frontend is on port 3000, backend is on port 8000
+        const backendUrl = window.location.origin.replace('-3000.', '-8000.');
+        return backendUrl;
+    }
+
+    // Otherwise, assume backend is on same host but port 8000
+    return `${window.location.protocol}//${hostname}:8000`;
+}
+
+const API_BASE_URL = getApiBaseUrl();
+const API_URL = `${API_BASE_URL}/api/nails/segment`;
+const API_URL_PROFESSIONAL = `${API_BASE_URL}/api/nails/render-professional`;
+
+console.log('🔧 API Configuration:');
+console.log('   Frontend:', window.location.origin);
+console.log('   Backend:', API_BASE_URL);
 
 // UI Elements
 const startBtn = document.getElementById("startBtn");

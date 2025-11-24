@@ -1,0 +1,74 @@
+================================================================
+  RUNPOD DEPLOYMENT - QUICK START
+================================================================
+
+📦 YOUR SETUP:
+   Location: /workspace/nail-projects/
+   Venv:     /workspace/nail-projects/venv/
+   Backend:  Port 8000
+   Frontend: Port 3000
+
+================================================================
+  RUN THE APPLICATION
+================================================================
+
+1. Make script executable (first time only):
+   
+   chmod +x /workspace/nail-projects/start_app.sh
+
+2. Run the script:
+   
+   cd /workspace/nail-projects
+   ./start_app.sh
+
+The script will:
+✅ Auto-detect and activate venv
+✅ Start backend and wait until ready
+✅ Start frontend
+✅ Show you the URLs
+
+================================================================
+  ACCESS YOUR APP
+================================================================
+
+On RunPod, your app will be available at:
+
+   Frontend: https://YOUR-POD-ID-3000.proxy.runpod.net/app-realtime.html
+   Backend:  https://YOUR-POD-ID-8000.proxy.runpod.net/docs
+
+Replace YOUR-POD-ID with your actual RunPod pod ID
+
+================================================================
+  STOP THE APPLICATION
+================================================================
+
+Press Ctrl+C in the terminal where you ran the script
+
+================================================================
+  IF BACKEND FAILS TO START
+================================================================
+
+Run backend manually to see the error:
+
+   cd /workspace/nail-projects/backend
+   source /workspace/nail-projects/venv/bin/activate
+   python3 -m uvicorn main:app --host 0.0.0.0 --port 8000
+
+Common fixes:
+- Model not found: Check /home/usama-naveed/nail_AR-rfdeter/output/checkpoint_best_total.pth
+- Missing packages: pip install rfdetr supervision opencv-python-headless
+- Port busy: pkill -f uvicorn
+
+See TROUBLESHOOTING.md for more help
+
+================================================================
+  CORS IS ALREADY CONFIGURED
+================================================================
+
+The backend has CORS enabled for all origins in backend/main.py
+No additional CORS configuration needed!
+
+================================================================
+
+Ready to run? Just type: ./start_app.sh 🚀
+

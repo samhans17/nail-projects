@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test API Connection</title>
+    <style>
+        body {
+            font-family: monospace;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #0a0a0a;
+            color: #eee;
+        }
+        .status {
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 2px solid #333;
+        }
+        .success { border-color: #4caf50; background: #1a3a1a; }
+        .error { border-color: #f44336; background: #3a1a1a; }
+        .info { border-color: #2196F3; background: #1a2a3a; }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            background: #667eea;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover { background: #764ba2; }
+        pre { background: #1a1a1a; padding: 10px; border-radius: 5px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🔌 API Connection Test</h1>
+
+    <div class="status info" id="config">
+        <h3>Configuration</h3>
+        <div id="configInfo">Loading...</div>
+    </div>
+
+    <div>
+        <button onclick="testHealth()">Test Health Endpoint</button>
+        <button onclick="testMaterials()">Test Materials Endpoint</button>
+        <button onclick="testCORS()">Test CORS</button>
+    </div>
+
+    <div class="status" id="result" style="display:none;">
+        <h3>Result</h3>
+        <pre id="resultText"></pre>
+    </div>
+
+    <script>
+        // Same API detection logic as main app
+        function getApiBaseUrl() {
+            const hostname = window.location.hostname;
+
+            if (hostname === 'localhost' || hostname === '127.0.0.1') {
+                return 'http://localhost:8000';
+            }
+
+            if (hostname.includes('proxy.runpod.net')) {
+                const backendUrl = window.location.origin.replace('-3000.', '-8000.');
+                return backendUrl;
+            }
+
+            return `${window.location.protocol}//${hostname}:8000`;
+        }
+
+        const API_BASE_URL = getApiBaseUrl();
+
+        // Show configuration
+        document.getElementById('configInfo').innerHTML = `
+            <strong>Frontend URL:</strong> ${window.location.origin}<br>
+            <strong>Backend URL:</strong> ${API_BASE_URL}<br>
+            <strong>Hostname:</strong> ${window.location.hostname}<br>
+            <strong>Protocol:</strong> ${window.location.protocol}
+        `;
+
+        function showResult(success, message, data = null) {
+            const resultDiv = document.getElementById('result');
+            const resultText = document.getElementById('resultText');
+            resultDiv.style.display = 'block';
+            resultDiv.className = `status ${success ? 'success' : 'error'}`;
+
+            let output = message;
+            if (data) {
+                output += '\n\n' + JSON.stringify(data, null, 2);
+            }
+            resultText.textContent = output;
+        }
+
+        async function testHealth() {
+            console.log('Testing health endpoint...');
+            try {
+                const response = await fetch(`${API_BASE_URL}/docs`);
+                if (response.ok) {
+                    showResult(true, '✅ Backend is reachable!\n\nAPI docs endpoint responded successfully.');
+                } else {
+                    showResult(false, `❌ Backend responded with status: ${response.status}`);
+                }
+            } catch (error) {
+                showResult(false, `❌ Connection failed!\n\nError: ${error.message}\n\nMake sure:\n1. Backend is running on port 8000\n2. Port 8000 is exposed in RunPod\n3. CORS is enabled`);
+            }
+        }
+
+        async function testMaterials() {
+            console.log('Testing materials endpoint...');
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/materials`);
+                if (response.ok) {
+                    const data = await response.json();
+                    showResult(true, `✅ Materials endpoint works!\n\nFound ${data.materials?.length || 0} materials:`, data);
+                } else {
+                    showResult(false, `❌ Materials endpoint error: ${response.status}`);
+                }
+            } catch (error) {
+                showResult(false, `❌ Materials test failed!\n\nError: ${error.message}`);
+            }
+        }
+
+        async function testCORS() {
+            console.log('Testing CORS...');
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/materials`, {
+                    method: 'GET',
+                    headers: {
+                        'Origin': window.location.origin
+                    }
+                });
+
+                const corsHeaders = {
+                    'access-control-allow-origin': response.headers.get('access-control-allow-origin'),
+                    'access-control-allow-methods': response.headers.get('access-control-allow-methods'),
+                    'access-control-allow-headers': response.headers.get('access-control-allow-headers'),
+                };
+
+                if (response.ok) {
+                    showResult(true, '✅ CORS is properly configured!', corsHeaders);
+                } else {
+                    showResult(false, `❌ CORS test failed: ${response.status}`, corsHeaders);
+                }
+            } catch (error) {
+                showResult(false, `❌ CORS test error!\n\nError: ${error.message}\n\nThis usually means CORS is blocking the request.`);
+            }
+        }
+
+        // Auto-test on load
+        window.onload = () => {
+            setTimeout(testHealth, 500);
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+===========================================
+ HOW TO RUN - Nail AR Application
+===========================================
+
+SIMPLE - Just run:
+
+   cd /home/usama-naveed/nail-project
+   ./start_app.sh
+
+The script auto-detects venv in:
+   1. $VENV_PATH (if set)
+   2. ./venv
+   3. /workspace/nail-projects/venv (for RunPod)
+
+
+OPEN IN BROWSER:
+
+   http://localhost:3000/app-realtime.html
+
+
+STOP:
+
+   Press Ctrl+C
+
+
+===========================================
+ FOR RUNPOD DEPLOYMENT
+===========================================
+
+Your venv path: /workspace/nail-projects/venv
+
+Just run:
+
+   cd /workspace/nail-projects
+   ./start_app.sh
+
+The script will automatically find and activate:
+   /workspace/nail-projects/venv
+
+Your app will be available at:
+
+   Frontend: https://YOUR-POD-ID-3000.proxy.runpod.net/app-realtime.html
+   Backend:  https://YOUR-POD-ID-8000.proxy.runpod.net/docs
+
+Note: Expose ports 3000 and 8000 in RunPod settings
+
+
+===========================================
+ MANUAL VENV ACTIVATION (Optional)
+===========================================
+
+If you prefer to activate manually:
+
+   source /workspace/nail-projects/venv/bin/activate
+   cd /workspace/nail-projects
+   ./start_app.sh
+
+===========================================
