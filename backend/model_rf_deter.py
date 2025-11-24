@@ -6,9 +6,14 @@ from PIL import Image
 import numpy as np
 
 # Load the RF-DETR model
-model = RFDETRSegPreview(pretrain_weights="/home/usama-naveed/nail_AR-rfdeter/output/checkpoint_best_total.pth")
+import torch
+device = "cuda" if torch.cuda.is_available() else "cpu"
+model = RFDETRSegPreview(
+    pretrain_weights="/home/usama-naveed/nail_AR-rfdeter/output/checkpoint_best_total.pth",
+    device=device
+)
 model.optimize_for_inference()
-print("RF-DETR model loaded and optimized for inference.")
+print(f"RF-DETR model loaded on {device.upper()} and optimized for inference.")
 
 def run_inference(image: Image.Image) -> Dict[str, Any]:
     """
@@ -22,8 +27,8 @@ def run_inference(image: Image.Image) -> Dict[str, Any]:
     """
     width, height = image.size
 
-    # Run detection with threshold
-    detections = model.predict(image, threshold=0.5)
+    # Run detection with threshold (0.3 is more lenient, faster processing)
+    detections = model.predict(image, threshold=0.3)
 
     nails: List[Dict[str, Any]] = []
 
