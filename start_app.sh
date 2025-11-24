@@ -29,7 +29,7 @@ cd ..
 
 # Wait for backend to be ready
 echo "⏳ Waiting for backend to start..."
-MAX_WAIT=60
+MAX_WAIT=250
 COUNTER=0
 
 while [ $COUNTER -lt $MAX_WAIT ]; do

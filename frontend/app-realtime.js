@@ -11,8 +11,17 @@ function getApiBaseUrl() {
 
     // If on RunPod (proxy.runpod.net), replace port in URL
     if (hostname.includes('proxy.runpod.net')) {
-        // Frontend is on port 3000, backend is on port 8000
-        const backendUrl = window.location.origin.replace('-3000.', '-8000.');
+        // RunPod format: xxxxx-3000.proxy.runpod.net OR xxxxx3000.proxy.runpod.net
+        // Backend is on port 8000
+        const origin = window.location.origin;
+
+        // Try format with dash first
+        let backendUrl = origin.replace('-3000.', '-8000.');
+        if (backendUrl === origin) {
+            // No change? Try without dash
+            backendUrl = origin.replace('3000.', '8000.');
+        }
+
         return backendUrl;
     }
 

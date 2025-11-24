@@ -63,7 +63,13 @@
             }
 
             if (hostname.includes('proxy.runpod.net')) {
-                const backendUrl = window.location.origin.replace('-3000.', '-8000.');
+                const origin = window.location.origin;
+                // Try with dash first
+                let backendUrl = origin.replace('-3000.', '-8000.');
+                if (backendUrl === origin) {
+                    // Try without dash
+                    backendUrl = origin.replace('3000.', '8000.');
+                }
                 return backendUrl;
             }
 
