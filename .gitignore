@@ -3,3 +3,5 @@
 *.pt
 /venv_1
 */venv_1/
+*.pt
+*.pth
