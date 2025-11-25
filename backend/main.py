@@ -10,16 +10,12 @@ import io
 import cv2
 import numpy as np
 
-from model_rf_deter import run_inference, get_model
+from model_rf_deter import run_inference, model
 from schemas import NailResponse, NailInstance
 from utils import read_image_from_bytes
-from cache import segmentation_cache
 
 # Add professional renderer to path
-# Get the project root directory (parent of backend/) and add it to sys.path
-# This allows importing professional_nail_renderer as a package
-project_root = Path(__file__).parent.parent
-sys.path.insert(0, str(project_root))
+sys.path.insert(0, str(Path(__file__).parent.parent / 'professional_nail_renderer'))
 
 from professional_nail_renderer import (
     NailGeometryAnalyzer,
@@ -60,16 +56,9 @@ def hex_to_rgb(hex_color: str) -> tuple:
 @app.post("/api/nails/segment", response_model=NailResponse)
 async def segment_nails(file: UploadFile = File(...)):
     raw = await file.read()
-
-    # Check cache first
-    cached_result = segmentation_cache.get(raw)
-    if cached_result is not None:
-        return cached_result
-
-    # Cache miss - run inference
     img = read_image_from_bytes(raw)
-    result = run_inference(img)
 
+    result = run_inference(img)
     nails = [
         NailInstance(
             id=n["id"],
@@ -79,16 +68,11 @@ async def segment_nails(file: UploadFile = File(...)):
         for n in result["nails"]
     ]
 
-    response = NailResponse(
+    return NailResponse(
         width=result["width"],
         height=result["height"],
         nails=nails,
     )
-
-    # Cache the result
-    segmentation_cache.set(raw, response)
-
-    return response
 
 
 @app.post("/api/nails/render-professional")
@@ -122,13 +106,8 @@ async def render_professional(
     frame = np.array(img)
     frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
-    # Get model instance and run RF-DETR segmentation with caching
-    model_instance = get_model()
-
-    # Use torch.no_grad() for faster inference
-    import torch
-    with torch.no_grad():
-        detections = model_instance.predict(img, threshold=0.2)
+    # Run RF-DETR segmentation
+    detections = model.predict(img, threshold=0.2)
 
     # Get or create material
     presets = MaterialPresets.all_presets()
@@ -211,26 +190,3 @@ async def get_materials():
         })
 
     return {"materials": materials}
-
-
-@app.get("/api/cache/stats")
-async def get_cache_stats():
-    """
-    Get cache statistics for monitoring performance
-
-    Returns:
-        JSON with cache statistics
-    """
-    return segmentation_cache.get_stats()
-
-
-@app.post("/api/cache/clear")
-async def clear_cache():
-    """
-    Clear the segmentation cache
-
-    Returns:
-        Success message
-    """
-    segmentation_cache.clear()
-    return {"message": "Cache cleared successfully"}
